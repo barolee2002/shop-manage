@@ -15,5 +15,5 @@ public class InventoryUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private Long InventoryId;
+    private Long inventoryId;
 }
