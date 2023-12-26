@@ -2,6 +2,8 @@ package com.example.clothes.dto.response;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class StaffResponse {
     private Long Id;
@@ -12,5 +14,6 @@ public class StaffResponse {
     private String username;
     private String password;
     private String role;
-    private Long InventoryId;
+    private Long ownerId;
+    private Date createAt;
 }

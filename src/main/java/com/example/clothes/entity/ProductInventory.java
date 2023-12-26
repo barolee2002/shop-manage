@@ -19,7 +19,7 @@ public class ProductInventory {
 
     private Long productAttributeId;
     private Long inventoryId;
-
     private BigDecimal costPrice;
     private BigDecimal sellPrice;
+    private Integer quantity;
 }

@@ -12,6 +12,6 @@ public class ProductDTO {
     private String code;
     private String name;
     private Integer status;
+    private Integer ownerId;
     private String category;
-    List<ProductAttributeDTO> attributes;
 }

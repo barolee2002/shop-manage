@@ -46,6 +46,8 @@ public class UserServiceImpl implements UserService {
         user.setStatus(1);
         return mapper.map(userRepo.save(user), UserDTOResponse.class);
     }
+
+    //thiếu thêm nhân viên vào kho
     @Override
     public StaffResponse addStaff(StaffResponse staff) {
         if( Utils.isEmptyOrNull(staff.getUsername()) || Utils.isEmptyOrNull(staff.getPassword()))
@@ -58,7 +60,6 @@ public class UserServiceImpl implements UserService {
         user = userRepo.save(user);
         InventoryUser inventoryUser = new InventoryUser();
         inventoryUser.setUserId(user.getId());
-        inventoryUser.setInventoryId(staff.getInventoryId());
         inventoryUserRepo.save(inventoryUser);
         return mapper.map(userRepo.save(user), StaffResponse.class);
 

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -25,5 +27,6 @@ public class ProductAttribute {
     private String variation;
     private String description;
     private Integer status;
+    private Date createdAt;
 
 }

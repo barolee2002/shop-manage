@@ -15,5 +15,4 @@ public class ProductAttributeDTO {
     private String origin;
     private String variation;
     private String description;
-    private Integer status;
 }

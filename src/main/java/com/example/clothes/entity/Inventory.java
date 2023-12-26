@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -18,6 +20,7 @@ public class Inventory {
     private String name;
     private Integer status;
     private String address;
+    private Date createdAt;
 
 
 }

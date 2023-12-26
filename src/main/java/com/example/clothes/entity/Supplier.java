@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -22,4 +24,5 @@ public class Supplier {
     private String phone;
     private BigDecimal deptMoney;
     private Long storeId;
+    private Date createdAt;
 }

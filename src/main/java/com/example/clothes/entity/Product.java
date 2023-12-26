@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -23,4 +25,6 @@ public class Product {
     private Integer status;
     @Column
     private String category;
+    private Long ownerId;
+    private Date createdAt;
 }
