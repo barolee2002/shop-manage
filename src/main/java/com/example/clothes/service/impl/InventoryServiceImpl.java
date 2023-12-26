@@ -14,8 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +59,12 @@ public class InventoryServiceImpl implements InventoryService {
     public List<InventoryDTOResponse> getAllByUser(Long userId) {
         List<InventoryDTOResponse> inventoriesDTO = new ArrayList<InventoryDTOResponse>();
         List<InventoryUser> inventories = inventoryUserRepo.findByUserId(userId);
-        for(InventoryUser inventoryItem :  inventories) {
-            Inventory inventory = inventoryRepo.findById(inventoryItem.getInventoryId()).get();
-            inventoriesDTO.add(mapper.map(inventory,InventoryDTOResponse.class));
-        }
+//        for(InventoryUser inventoryItem :  inventories) {
+//            Inventory inventory = inventoryRepo.findById(inventoryItem.getInventoryId()).get();
+//            inventoriesDTO.add(mapper.map(inventory,InventoryDTOResponse.class));
+//        }
+        List<Inventory> inventories1 = inventories.stream().map(item -> inventoryRepo.findById(item.getInventoryId()).get()).collect(Collectors.toList());
+        inventoriesDTO = Arrays.asList(mapper.map(inventories1, InventoryDTOResponse[].class));
         return inventoriesDTO;
     }
     @Override
@@ -71,12 +76,20 @@ public class InventoryServiceImpl implements InventoryService {
     public List<UserDTOResponse> getAllStaffInInventory(Long inventoryId) {
         List<UserDTOResponse> staffs = new ArrayList<UserDTOResponse> ();
         List<InventoryUser> inventories = inventoryUserRepo.findByInventoryId(inventoryId);
-        for(InventoryUser inventoryItem :  inventories) {
-            User user = userRepo.findById(inventoryItem.getUserId()).get();
+//        for(InventoryUser inventoryItem :  inventories) {
+//            User user = userRepo.findById(inventoryItem.getUserId()).get();
+//            if(!user.getRole().equals("ADMIN")) {
+//                staffs.add(mapper.map(user, UserDTOResponse.class));
+//            }
+//        }
+        inventories.stream().map(item -> {
+            User user = userRepo.findById(item.getUserId()).get();
             if(!user.getRole().equals("ADMIN")) {
-                staffs.add(mapper.map(user, UserDTOResponse.class));
+                return user;
+            } else {
+                return null;
             }
-        }
+        }).collect(Collectors.toList());
         return staffs;
     }
 }
