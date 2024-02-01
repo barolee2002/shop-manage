@@ -18,5 +18,5 @@ public class OrderDetail {
     private Long productAttributeId;
 
     private Integer quantity;
-    private Integer oderId;
+    private Long oderId;
 }

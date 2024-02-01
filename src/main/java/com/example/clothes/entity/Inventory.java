@@ -20,7 +20,7 @@ public class Inventory {
     private String name;
     private Integer status;
     private String address;
-    private Date createdAt;
+    private Date createAt;
 
 
 }

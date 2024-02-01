@@ -19,9 +19,8 @@ public class ProductAttribute {
     private Long id;
 
     private Long productId;
-
+    private String imageLink;
     private String material;
-    private String brand;
     private String size;
     private String origin;
     private String variation;

@@ -9,6 +9,9 @@ import com.example.clothes.dto.response.UserDTOResponse;
 public interface UserService {
     UserDTOResponse addUser(UserDTOResponse userDTO);
 
+
+
+    //thiếu thêm nhân viên vào kho
     StaffResponse addStaff(StaffResponse staff);
 
     LoginResponse login(LoginRequest loginRequest);

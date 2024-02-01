@@ -25,6 +25,7 @@ public class Product {
     private Integer status;
     @Column
     private String category;
+    private String brand;
     private Long ownerId;
-    private Date createdAt;
+    private Date createAt;
 }

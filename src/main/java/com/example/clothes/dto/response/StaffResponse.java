@@ -14,6 +14,7 @@ public class StaffResponse {
     private String username;
     private String password;
     private String role;
+    private Long inventoryId;
     private Long ownerId;
     private Date createAt;
 }

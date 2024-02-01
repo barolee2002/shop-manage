@@ -20,7 +20,7 @@ public class Customer {
     private String code;
     private String name;
     private String phone;
-    private Integer storeId;
+    private Long storeId;
     private Date createdAt;
 
 }

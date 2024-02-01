@@ -27,7 +27,9 @@ public class UserController {
     }
     //create staff account
     @PostMapping(value = "/staff")
-    public Response<StaffResponse> staff(@RequestBody StaffResponse staffRequest) {
+    public Response<StaffResponse> staff(
+            @RequestBody StaffResponse staffRequest
+    ) {
         return new Response<>(HttpStatus.OK.value(), userService.addStaff(staffRequest));
     }
 

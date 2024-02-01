@@ -17,5 +17,5 @@ public class Image {
     @Column
     private String link;
     @Column
-    private Long productAttributeId;
+    private Long productId;
 }

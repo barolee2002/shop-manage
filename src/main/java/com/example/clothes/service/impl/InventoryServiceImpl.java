@@ -59,10 +59,6 @@ public class InventoryServiceImpl implements InventoryService {
     public List<InventoryDTOResponse> getAllByUser(Long userId) {
         List<InventoryDTOResponse> inventoriesDTO = new ArrayList<InventoryDTOResponse>();
         List<InventoryUser> inventories = inventoryUserRepo.findByUserId(userId);
-//        for(InventoryUser inventoryItem :  inventories) {
-//            Inventory inventory = inventoryRepo.findById(inventoryItem.getInventoryId()).get();
-//            inventoriesDTO.add(mapper.map(inventory,InventoryDTOResponse.class));
-//        }
         List<Inventory> inventories1 = inventories.stream().map(item -> inventoryRepo.findById(item.getInventoryId()).get()).collect(Collectors.toList());
         inventoriesDTO = Arrays.asList(mapper.map(inventories1, InventoryDTOResponse[].class));
         return inventoriesDTO;
