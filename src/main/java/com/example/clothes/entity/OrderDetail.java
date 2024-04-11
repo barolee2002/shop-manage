@@ -15,8 +15,11 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Long productAttributeId;
 
+    @Column
     private Integer quantity;
-    private Long oderId;
+    @Column
+    private Long orderId;
 }

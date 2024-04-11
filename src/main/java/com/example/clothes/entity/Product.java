@@ -17,15 +17,18 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String code;
     @Column
     private String name;
     @Column
     private Integer status;
     @Column
+    private String imageLink;
+    @Column
     private String category;
+    @Column
     private String brand;
-    private Long ownerId;
+    @Column
+    private Long storeId;
+    @Column
     private Date createAt;
 }

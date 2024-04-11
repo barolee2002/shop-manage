@@ -13,22 +13,11 @@ public interface ProductAttributeRepository extends JpaRepository<ProductAttribu
     // Add custom query methods if needed
 
     Page<ProductAttribute> findByProductIdAndStatus(Long productId,Integer status, Pageable pageable);
-    List<ProductAttribute> findByProductIdAndStatus(Long productId,Integer status);
-    @Query("Select e.size FROM ProductAttribute e Where (e.productId = :productId) AND (e.status = 1)")
-    List<String> findSizeByProductId(Long productId);
-    @Query("Select e.origin FROM ProductAttribute e Where (e.productId = :productId) AND (e.status = 1)")
-    List<String> findOriginByProductId(Long productId);
-    @Query("Select e.variation FROM ProductAttribute e Where (e.productId = :productId) AND (e.status = 1)")
-    List<String> findColorByProductId(Long productId);
-    @Query("Select e.material FROM ProductAttribute e Where (e.productId = :productId) AND (e.status = 1)")
-    List<String> findMaterialByProductId(Long productId);
-    @Query("Select e FROM ProductAttribute e Where (e.productId = :productId) AND (e.size = :size) AND (e.material = :material) AND (e.variation = :variation) AND (e.origin = :origin) AND (e.status = 1)")
-    ProductAttribute findDupplicateAttribute(
-            @Param("productId") Long productId,
-            @Param("size") String size,
-            @Param("material") String material,
-            @Param("variation") String variation,
-            @Param("origin") String origin
+    @Query("SELECT e FROM ProductAttribute e WHERE e.productId = :productId AND e.status = 1")
+    List<ProductAttribute> findByProductIdAndStatus(@Param("productId") Long productId);
 
-    );
+
+    @Query("SELECT count(e) FROM ProductAttribute e WHERE e.productId = :productId")
+    Long countByProductId( @Param("productId") Long productId);
+    List<ProductAttribute> findByProductId(Long productId);
 }

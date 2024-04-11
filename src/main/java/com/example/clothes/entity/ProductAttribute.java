@@ -17,15 +17,17 @@ public class ProductAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column
+    private String code;
+    @Column
     private Long productId;
+    @Column
     private String imageLink;
-    private String material;
-    private String size;
-    private String origin;
-    private String variation;
-    private String description;
+    @Column
+    private String otherAttribute;
+    @Column
     private Integer status;
-    private Date createdAt;
+    @Column
+    private Date createAt;
 
 }

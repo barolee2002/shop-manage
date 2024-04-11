@@ -8,13 +8,9 @@ import java.util.List;
 
 public class ProductAttributeDTO {
     private Long id;
-
+    private String code;
     private Long productId;
     private String imageLink;
-    private String material;
-    private String size;
-    private String origin;
-    private String variation;
-    private String description;
+    private List<OtherAttribute> otherAttribute;
     private List<ProductAttributeInventoryDTO> inventoryList;
  }

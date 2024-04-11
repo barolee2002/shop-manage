@@ -13,6 +13,6 @@ public class UserDTOResponse {
     private String username;
     private String password;
     private String role;
-    private Long ownerId;
+    private Long storeId;
     private Integer status;
 }

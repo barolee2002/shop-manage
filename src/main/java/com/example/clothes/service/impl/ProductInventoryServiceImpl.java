@@ -32,4 +32,23 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
         return productAttributeInventoryDTOS;
 
     }
+    @Override
+    public ProductAttributeInventoryDTO create(ProductAttributeInventoryDTO dto) {
+        ProductInventory productInventory = mapper.map(dto, ProductInventory.class);
+        return mapper.map(productInventoryRepository.save(productInventory), ProductAttributeInventoryDTO.class);
+    }
+    @Override
+    public ProductAttributeInventoryDTO update ( ProductAttributeInventoryDTO dto) {
+        ProductInventory productInventory = productInventoryRepository.findById(dto.getId()).get();
+        productInventory = mapper.map(dto, ProductInventory.class);
+        return mapper.map(productInventoryRepository.save(productInventory), ProductAttributeInventoryDTO.class);
+    }
+    @Override
+    public ProductAttributeInventoryDTO getByProductAndInventory(Long productId, Long inventoryId) {
+        ProductInventory productInventory = productInventoryRepository.findByProductIdAndInventoryId(productId, inventoryId);
+        if (productInventory == null) {return null;}
+        return mapper.map(productInventory, ProductAttributeInventoryDTO.class);
+    }
+
+
 }

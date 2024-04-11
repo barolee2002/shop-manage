@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "inventory_user")
 public class InventoryUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Long userId;
-    private Long inventoryId;
+    @EmbeddedId
+    private UserInventoryKey userInventoryKey;
 }

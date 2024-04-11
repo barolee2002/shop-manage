@@ -16,10 +16,14 @@ public class GoodsReceiptProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Long receiptId;
+    @Column
     private Long productAttributeId;
 
+    @Column
     private BigDecimal cost;
+    @Column
     private Integer quantity;
 
     // Getters and setters

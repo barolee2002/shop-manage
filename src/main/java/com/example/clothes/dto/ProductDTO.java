@@ -10,13 +10,13 @@ import java.util.List;
 @Data
 public class ProductDTO {
     private Long id;
-    private String code;
+
     private String name;
     private String brand;
     private Integer status;
-    private Integer ownerId;
+    private Long storeId;
+    private String imageLink;
     private String category;
     private Date createAt;
-    private List<String> imageLinks;
     private List<ProductAttributeDTO> attributes;
 }

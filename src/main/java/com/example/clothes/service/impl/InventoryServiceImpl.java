@@ -6,6 +6,7 @@ import com.example.clothes.dto.response.UserDTOResponse;
 import com.example.clothes.entity.Inventory;
 import com.example.clothes.entity.InventoryUser;
 import com.example.clothes.entity.User;
+import com.example.clothes.entity.UserInventoryKey;
 import com.example.clothes.repository.InventoryRepository;
 import com.example.clothes.repository.InventoryUserRepository;
 import com.example.clothes.repository.UserRepository;
@@ -35,8 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
         newInventory.setStatus(1);
         newInventory = inventoryRepo.save(newInventory);
         InventoryUser newInventoryUser = new InventoryUser();
-        newInventoryUser.setInventoryId(newInventory.getId());
-        newInventoryUser.setUserId(userId);
+        newInventoryUser.setUserInventoryKey(new UserInventoryKey(userId,newInventory.getId()));
         inventoryUserRepo.save(newInventoryUser);
         return mapper.map(newInventory, InventoryDTOResponse.class);
 
@@ -59,7 +59,7 @@ public class InventoryServiceImpl implements InventoryService {
     public List<InventoryDTOResponse> getAllByUser(Long userId) {
         List<InventoryDTOResponse> inventoriesDTO = new ArrayList<InventoryDTOResponse>();
         List<InventoryUser> inventories = inventoryUserRepo.findByUserId(userId);
-        List<Inventory> inventories1 = inventories.stream().map(item -> inventoryRepo.findById(item.getInventoryId()).get()).collect(Collectors.toList());
+        List<Inventory> inventories1 = inventories.stream().map(item -> inventoryRepo.findById(item.getUserInventoryKey().getInventoryId()).get()).collect(Collectors.toList());
         inventoriesDTO = Arrays.asList(mapper.map(inventories1, InventoryDTOResponse[].class));
         return inventoriesDTO;
     }
@@ -72,14 +72,8 @@ public class InventoryServiceImpl implements InventoryService {
     public List<UserDTOResponse> getAllStaffInInventory(Long inventoryId) {
         List<UserDTOResponse> staffs = new ArrayList<UserDTOResponse> ();
         List<InventoryUser> inventories = inventoryUserRepo.findByInventoryId(inventoryId);
-//        for(InventoryUser inventoryItem :  inventories) {
-//            User user = userRepo.findById(inventoryItem.getUserId()).get();
-//            if(!user.getRole().equals("ADMIN")) {
-//                staffs.add(mapper.map(user, UserDTOResponse.class));
-//            }
-//        }
         inventories.stream().map(item -> {
-            User user = userRepo.findById(item.getUserId()).get();
+            User user = userRepo.findById(item.getUserInventoryKey().getUserId()).get();
             if(!user.getRole().equals("ADMIN")) {
                 return user;
             } else {

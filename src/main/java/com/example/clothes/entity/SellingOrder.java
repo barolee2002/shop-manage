@@ -17,13 +17,19 @@ public class SellingOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String code;
-
+    private Long storeId;
+    @Column
     private Long customerId;
+    @Column
     private Long userId;
 
+    @Column
     private BigDecimal total;
+    @Column
     private Integer status;
+    @Column
     private Date createAt;
 
     // Getters and setters

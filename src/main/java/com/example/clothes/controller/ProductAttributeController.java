@@ -15,9 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductAttributeController {
     private final ProductAttributeService productAttributeService;
-    @PostMapping("/creating")
-    public Response<ProductAttributeDTO> create(@RequestBody ProductAttributeDTO attributeDTO) {
-        return new Response<>(HttpStatus.OK.value(), productAttributeService.create(attributeDTO));
+    @PostMapping("/creating/{productId}")
+    public Response<ProductAttributeDTO> create(@RequestBody ProductAttributeDTO attributeDTO, @PathVariable Long productId) {
+        return new Response<>(HttpStatus.OK.value(), productAttributeService.create(attributeDTO,productId));
     }
     @PutMapping("updating/{attibuteId}")
     public Response<ProductAttributeDTO> update(
@@ -36,30 +36,7 @@ public class ProductAttributeController {
     ) {
         return new Response<>(HttpStatus.OK.value(), productAttributeService.getAllAttributeByProduct(productId));
     }
-    @GetMapping("/size/{productId}")
-    public Response<List<String>> getAllSizeByProduct(
-            @PathVariable("productId") Long productId
-    ) {
-        return new Response<>(HttpStatus.OK.value(),productAttributeService.getSizeByProductId(productId));
-    }
-    @GetMapping("/origin/{productId}")
-    public Response<List<String>> getAllOriginByProduct(
-            @PathVariable("productId") Long productId
-    ) {
-        return new Response<>(HttpStatus.OK.value(),productAttributeService.getOriginByProductId(productId));
-    }
-    @GetMapping("/variation/{productId}")
-    public Response<List<String>> getAllVariationByProduct(
-            @PathVariable("productId") Long productId
-    ) {
-        return new Response<>(HttpStatus.OK.value(),productAttributeService.getVarialtionByProductId(productId));
-    }
-    @GetMapping("/material/{productId}")
-    public Response<List<String>> getAllMaterialByProduct(
-            @PathVariable("productId") Long productId
-    ) {
-        return new Response<>(HttpStatus.OK.value(),productAttributeService.getMaterialByProductId(productId));
-    }
+
     @GetMapping("/detail/{productId}")
     public Response<ProductAttributeDTO> getDetail(@PathVariable("productId") Long productId) {
         return new Response<>(HttpStatus.OK.value(), productAttributeService.getDetail(productId));

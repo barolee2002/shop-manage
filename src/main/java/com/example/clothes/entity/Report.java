@@ -18,14 +18,21 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String code;
 
+    @Column
     private Long staffId; // Representing the relationship with User
+    @Column
 
     private BigDecimal revenue;
+    @Column
     private Integer soldProduct;
+    @Column
     private Integer soldOrder;
+    @Column
     private BigDecimal interestMoney;
+    @Column
     private Date createdAt;
 
     // Getters and setters

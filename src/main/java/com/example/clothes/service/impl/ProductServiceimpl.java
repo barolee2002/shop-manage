@@ -1,12 +1,11 @@
 package com.example.clothes.service.impl;
 
 import com.example.clothes.dto.BasePage;
+import com.example.clothes.dto.ProductAttributeDTO;
 import com.example.clothes.dto.ProductDTO;
-import com.example.clothes.entity.Image;
+import com.example.clothes.dto.response.ProductResponseDto;
 import com.example.clothes.entity.Product;
 import com.example.clothes.entity.User;
-import com.example.clothes.repository.ImageRepository;
-import com.example.clothes.repository.ProductAttributeRepository;
 import com.example.clothes.repository.ProductRepository;
 import com.example.clothes.repository.UserRepository;
 import com.example.clothes.service.ProductAttributeService;
@@ -20,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ProductServiceimpl implements ProductService {
@@ -27,61 +28,62 @@ public class ProductServiceimpl implements ProductService {
     private final ModelMapper mapper = new ModelMapper();
     private final ProductAttributeService attributeService;
     private final UserRepository userRepo;
-    private final ProductAttributeRepository attributeRepository;
-    private final ImageRepository imageRepository;
     @Override
+    @Transactional
     public ProductDTO create(ProductDTO productDTO) {
-        Product product = new Product();
-        product = mapper.map(productDTO, Product.class);
+        Product product =  mapper.map(productDTO, Product.class);
         product.setStatus(1);
-        return mapper.map(productRepo.save(product), ProductDTO.class);
+        product.setCreateAt(new Date());
+        product = productRepo.save(product);
+        Product finalProduct = product;
+
+        List<ProductAttributeDTO> attributeDTOS =  productDTO.getAttributes().stream().map((attribute) ->  attributeService.create(attribute, finalProduct.getId())).collect(Collectors.toList());
+        ProductDTO response = mapper.map(product, ProductDTO.class);
+        response.setAttributes(attributeDTOS);
+        return response;
     }
     @Override
     @Transactional
     public ProductDTO update(ProductDTO productDTO, Long productId) {
         Product product = productRepo.findById(productId).get();
         product = mapper.map(productDTO, Product.class);
-        imageRepository.deleteByProductId(product.getId());
-        if(productDTO.getImageLinks().size() > 0) {
-            for(int i = 0; i < productDTO.getImageLinks().size(); i++) {
-                Image image = new Image();
-                image.setLink(productDTO.getImageLinks().get(i));
-                image.setProductId(productId);
-                imageRepository.save(image);
-            }
-        }
         product = productRepo.save(product);
         return getDetail(product.getId());
     }
     @Override
     public ProductDTO getDetail(Long productId) {
         Product product = productRepo.findById((productId)).get();
-        List<Image> images = imageRepository.findByProductId(productId);
-
         ProductDTO productDTO = mapper.map(product,ProductDTO.class);
         productDTO.setAttributes(attributeService.getAllAttributeByProduct(productId));
-        productDTO.setImageLinks(images.stream().map(item->item.getLink()).toList());
         return productDTO;
     }
     @Override
-    public BasePage<ProductDTO> get(String name, String category, String code, Long userId, String fromTime, String toTime, Integer page, Integer pageSize) {
+    public BasePage<ProductResponseDto> get(String name, Long inventoryId, String category, Long userId, String fromTime, String toTime, Integer page, Integer pageSize) {
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);
 
         User user = userRepo.findById(userId).get();
-        Page<Product> productPage = productRepo.findAll( name,1, category,code,user.getOwnerId(),fromTime, toTime, pageable);
-        BasePage<ProductDTO> dataPage = new BasePage<>();
+        Page<Product> productPage = productRepo.findAll( name, category,user.getStoreId(),fromTime, toTime, pageable);
+        List<ProductResponseDto> dtos = productPage.get().map(product -> mapper.map(product, ProductResponseDto.class)).toList();
+        dtos = dtos.stream().map(dto -> {
+            dto.setAttributes(attributeService.getByProductAndInventory(dto.getId(), inventoryId));
+            dto.setMinPrice(attributeService.minPriceByProductAndInventory(dto.getId(),inventoryId));
+            dto.setMaxPrice(attributeService.maxPriceByProductAndInventory(dto.getId(),inventoryId));
+            dto.setTotalQuantity(attributeService.totalQuantityByInventory(dto.getId(),inventoryId));
+            return dto;
+        }).collect(Collectors.toList());
+        BasePage<ProductResponseDto> dataPage = new BasePage<>();
         dataPage.setTotalElements(productPage.getTotalElements());
         dataPage.setTotalPages(productPage.getTotalPages());
         dataPage.setElements(productPage.getNumberOfElements());
-        dataPage.setData(productPage.get().map(product -> mapper.map(product, ProductDTO.class)).toList());
+        dataPage.setData(dtos);
         return dataPage;
 
     }
     @Override
     public List<String> getAllCatgories(Long userId) {
         User user = userRepo.findById(userId).get();
-        return productRepo.findCategoryByOwnerId(user.getOwnerId());
+        return productRepo.findCategoryByStoreId(user.getStoreId());
     }
     @Override
     public Integer deleteProduct(Long productId) {
@@ -90,5 +92,7 @@ public class ProductServiceimpl implements ProductService {
         productRepo.save(product);
         return 1;
     }
+
+
 
 }

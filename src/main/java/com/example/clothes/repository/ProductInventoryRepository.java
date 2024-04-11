@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProductInventoryRepository extends JpaRepository<ProductInventory, Long> {
     // Add custom query methods if needed
     List<ProductInventory> findByProductId(Long productId);
+    ProductInventory findByProductIdAndInventoryId(Long productId, Long inventoryId);
 }

@@ -18,11 +18,20 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String name;
+    @Column
     private String address;
+    @Column
     private String email;
+    @Column
     private String phone;
+    @Column
     private BigDecimal deptMoney;
+    @Column
     private Long storeId;
+    @Column
+    private Integer status;
+    @Column
     private Date createdAt;
 }

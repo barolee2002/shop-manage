@@ -15,10 +15,15 @@ public class StockTakeDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Long stockTakeId;
+    @Column
     private Long productAttributeId;
 
+    @Column
     private Integer oldQuantity;
+    @Column
     private Integer actualQuantity;
+    @Column
     private String reason;
 }

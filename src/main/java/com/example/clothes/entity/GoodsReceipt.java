@@ -17,18 +17,30 @@ public class GoodsReceipt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String code;
 
+    @Column
     private Long supplierId;
+    @Column
     private Long bookingUserId;
+    @Column
     private Long confirmUserId;
+    @Column
     private Long inventoryId;
+    private Long storeId;
+    @Column
     private Long paymentTypeId;
 
+    @Column
     private BigDecimal total;
+    @Column
     private Date bookingDate;
+    @Column
     private Integer payStatus;
+    @Column
     private Integer receiptStatus;
+    @Column
     private Date receiptDate;
 
     // Getters and setters

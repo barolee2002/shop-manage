@@ -17,9 +17,14 @@ public class ProductInventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Long productId;
+    @Column
     private Long inventoryId;
+    @Column
     private BigDecimal costPrice;
+    @Column
     private BigDecimal sellPrice;
+    @Column
     private Integer quantity;
 }

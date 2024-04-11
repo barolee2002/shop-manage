@@ -15,6 +15,6 @@ public class StaffResponse {
     private String password;
     private String role;
     private Long inventoryId;
-    private Long ownerId;
+    private Long storeId;
     private Date createAt;
 }

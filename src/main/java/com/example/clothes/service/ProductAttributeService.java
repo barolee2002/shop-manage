@@ -2,11 +2,13 @@ package com.example.clothes.service;
 
 import com.example.clothes.dto.BasePage;
 import com.example.clothes.dto.ProductAttributeDTO;
+import com.example.clothes.dto.response.ProductAttributeResponseDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductAttributeService {
-    ProductAttributeDTO create(ProductAttributeDTO attributeDTO);
+    ProductAttributeDTO create(ProductAttributeDTO attributeDTO, Long productId);
 
 
 
@@ -18,11 +20,12 @@ public interface ProductAttributeService {
 
     Long delete(Long attributeId);
 
-    List<String> getMaterialByProductId(Long productId);
 
-    List<String> getSizeByProductId(Long productId);
+    List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId);
 
-    List<String> getVarialtionByProductId(Long productId);
+    BigDecimal minPriceByProductAndInventory(Long productId, Long inventoryId);
 
-    List<String> getOriginByProductId(Long productId);
+    BigDecimal maxPriceByProductAndInventory(Long productId, Long inventoryId);
+
+    Integer totalQuantityByInventory(Long inventoryId, Long productId);
 }

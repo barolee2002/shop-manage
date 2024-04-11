@@ -15,5 +15,6 @@ public class PaymentType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String content;
 }

@@ -15,11 +15,16 @@ public class StockTake {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Long userId; // Representing the relationship with User
-
+    private Long storeId;
+    @Column
+    private Long createUser; // Representing the relationship with User
+    @Column
+    private Long confirmUser;
+    @Column
     private Integer status;
+    @Column
     private Date createAt;
+    @Column
     private Date updateAt;
 
     // Getters and setters

@@ -8,6 +8,7 @@ import com.example.clothes.dto.response.StaffResponse;
 import com.example.clothes.dto.response.UserDTOResponse;
 import com.example.clothes.entity.InventoryUser;
 import com.example.clothes.entity.User;
+import com.example.clothes.entity.UserInventoryKey;
 import com.example.clothes.exception.AppException;
 import com.example.clothes.exception.Errors;
 import com.example.clothes.repository.InventoryUserRepository;
@@ -42,15 +43,10 @@ public class UserServiceImpl implements UserService {
         if(userRepo.findFirstByUsername(userDTO.getUsername()).isPresent()){
             throw new AppException(Errors.EXIST_USER);
         }
-//        User user = mapper.map(userDTO, User.class);
-//        user.setStatus(1);
-//
-//        user=userRepo.save(user);
-//        user.setOwnerId(user.getId());
-        User user = User.builder()
-                .username(userDTO.getUsername())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
-                .build();
+        User user = mapper.map(userDTO, User.class);
+        user.setStatus(1);
+        user = userRepo.save(user);
+        user.setStoreId(user.getId());
         return mapper.map(userRepo.save(user), UserDTOResponse.class);
     }
 
@@ -64,15 +60,13 @@ public class UserServiceImpl implements UserService {
         }
         User user = mapper.map(staff, User.class);
         user.setStatus(1);
-        Long count = userRepo.countAllByOwnerId(staff.getOwnerId());
-        user.setCode("S" + count.toString());
+        Long count = userRepo.countAllByStoreId(staff.getStoreId());
+        user.setCode("S" + String.format("%06d", count));
         user = userRepo.save(user);
         InventoryUser inventoryUser = new InventoryUser();
-        inventoryUser.setUserId(user.getId());
-        inventoryUser.setInventoryId(staff.getInventoryId());
+        inventoryUser.setUserInventoryKey(new UserInventoryKey(user.getId(), staff.getInventoryId()));
         inventoryUserRepo.save(inventoryUser);
         return mapper.map(userRepo.save(user), StaffResponse.class);
-
     }
 
     @Override
@@ -83,7 +77,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepo.findByUsername(loginRequest.getUsername());
         return LoginResponse.builder()
                 .username(loginRequest.getUsername())
-                .ownerId(userOptional.get().getOwnerId())
+                .storeId(userOptional.get().getStoreId())
                 .name(userOptional.get().getName())
                 .token(jwt)
                 .expireTime(System.currentTimeMillis() + expireTime)

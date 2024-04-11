@@ -16,10 +16,16 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column
     private String code;
+    @Column
     private String name;
+    private Long storeId;
+    @Column
     private Integer status;
+    @Column
     private String address;
+    @Column
     private Date createAt;
 
 

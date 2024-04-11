@@ -1,34 +1,57 @@
 package com.example.clothes.service.impl;
 
 import com.example.clothes.dto.ProductAttributeDTO;
+import com.example.clothes.dto.ProductAttributeInventoryDTO;
+import com.example.clothes.dto.response.ProductAttributeResponseDto;
+import com.example.clothes.entity.Product;
 import com.example.clothes.entity.ProductAttribute;
-import com.example.clothes.exception.AppException;
-import com.example.clothes.exception.Errors;
 import com.example.clothes.repository.ProductAttributeRepository;
+import com.example.clothes.repository.ProductRepository;
 import com.example.clothes.service.ProductAttributeService;
 import com.example.clothes.service.ProductInventoryService;
+import com.example.clothes.utils.Transform;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static java.lang.Long.sum;
 
 @Service
 @RequiredArgsConstructor
 public class ProductAttributeServiceImpl implements ProductAttributeService {
     private final ProductAttributeRepository productAttributeRepo;
     private final ProductInventoryService productInventoryService;
+    private final ProductRepository productRepo;
+    private final Transform transformData = new Transform();
     private final ModelMapper mapper = new ModelMapper();
+
+    public Long getCountProduct() {
+        List<Product> products = productRepo.findAll();
+        return products.stream().reduce(0L,(total, product) -> sum(total,productAttributeRepo.countByProductId(product.getId())), Long::sum);
+    }
     @Override
-    public ProductAttributeDTO create(ProductAttributeDTO attributeDTO) {
-        if(productAttributeRepo.findDupplicateAttribute(attributeDTO.getProductId(), attributeDTO.getSize(), attributeDTO.getMaterial(), attributeDTO.getVariation(), attributeDTO.getOrigin()) != null) {
-            throw new AppException(Errors.EXIST_ATTRIBUTE);
-        }
+    @Transactional
+    public ProductAttributeDTO create(ProductAttributeDTO attributeDTO, Long productId) {
+//        if(productAttributeRepo.findDupplicateAttribute(attributeDTO.getProductId(), attributeDTO.getSize(), attributeDTO.getMaterial(), attributeDTO.getVariation(), attributeDTO.getOrigin()) != null) {
+//            throw new AppException(Errors.EXIST_ATTRIBUTE);
+//        }
         ProductAttribute attribute = new ProductAttribute();
         attribute = mapper.map(attributeDTO, ProductAttribute.class);
+        attribute.setProductId(productId);
+        if(attributeDTO.getCode() == null) {
+            attribute.setCode("P" + String.format("%08d", getCountProduct() + 1));
+        }
         attribute.setStatus(1);
+        attribute.setOtherAttribute(transformData.arrayToString(attributeDTO.getOtherAttribute()));
         return mapper.map(productAttributeRepo.save(attribute), ProductAttributeDTO.class);
 
     }
@@ -36,11 +59,15 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Override
     public List<ProductAttributeDTO> getAllAttributeByProduct(Long productId) {
         List<ProductAttributeDTO> productAttributeDTOS = new ArrayList<ProductAttributeDTO>();
-        List<ProductAttribute> attributes = productAttributeRepo.findByProductIdAndStatus(productId,1);
-         productAttributeDTOS = attributes.stream().map(attribute -> mapper.map(attribute, ProductAttributeDTO.class)).collect(Collectors.toList());
-        productAttributeDTOS = productAttributeDTOS.stream().map(productAttributeDTO -> {
-             productAttributeDTO.setInventoryList(productInventoryService.getAllByProductId(productAttributeDTO.getId()));
-             return productAttributeDTO;
+        List<ProductAttribute> attributes = productAttributeRepo.findByProductIdAndStatus(productId);
+         productAttributeDTOS = attributes.stream().map(attribute -> {
+             ProductAttributeDTO attributeDTO =  mapper.map(attribute, ProductAttributeDTO.class);
+             attributeDTO.setInventoryList(productInventoryService.getAllByProductId(attribute.getId()));
+             if(attribute.getOtherAttribute() != null) {
+                 attributeDTO.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
+             }
+
+             return attributeDTO;
          }).collect(Collectors.toList());
         return productAttributeDTOS;
     }
@@ -56,6 +83,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         ProductAttribute attribute = productAttributeRepo.findById((attributeId)).get();
         ProductAttributeDTO dto = mapper.map(attribute, ProductAttributeDTO.class);
         dto.setInventoryList(productInventoryService.getAllByProductId(attributeId));
+        dto.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
         return dto;
     }
     @Override
@@ -66,20 +94,54 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         return attribute.getId();
     }
     @Override
-    public List<String> getSizeByProductId(Long productId) {
-        return productAttributeRepo.findSizeByProductId(productId);
+    public List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId) {
+        List<ProductAttribute> productAttributes = productAttributeRepo.findByProductId(productId);
+        List<ProductAttributeResponseDto> response = new ArrayList<ProductAttributeResponseDto>();
+        response = productAttributes.stream().map(attribute -> {
+            ProductAttributeResponseDto attributeResponseDto = mapper.map(attribute, ProductAttributeResponseDto.class);
+            attributeResponseDto.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
+
+            ProductAttributeInventoryDTO productInventory = productInventoryService.getByProductAndInventory(attribute.getId(), inventoryId);
+            if(productInventory != null) {
+                attributeResponseDto.setCostPrice(productInventory.getCostPrice());
+                attributeResponseDto.setSellPrice(productInventory.getSellPrice());
+                attributeResponseDto.setQuantity(productInventory.getQuantity());
+
+            }
+            return attributeResponseDto;
+
+        }).collect(Collectors.toList());
+        return response;
     }
     @Override
-    public List<String> getMaterialByProductId(Long productId) {
-        return productAttributeRepo.findMaterialByProductId(productId);
+    public BigDecimal minPriceByProductAndInventory(Long productId, Long inventoryId){
+        List<ProductAttribute> productAttributes = productAttributeRepo.findByProductId(productId);
+        Optional<BigDecimal> response = productAttributes.stream().map(attribute -> {
+            ProductAttributeInventoryDTO productInventory = productInventoryService.getByProductAndInventory(attribute.getId(), inventoryId);
+            if(productInventory == null) {return BigDecimal.valueOf(0);}
+            return productInventory.getSellPrice();
+        }).min(Comparator.naturalOrder());
+        return response.get();
     }
     @Override
-    public List<String> getVarialtionByProductId(Long productId) {
-        return productAttributeRepo.findColorByProductId(productId);
+    public BigDecimal maxPriceByProductAndInventory(Long productId, Long inventoryId){
+        List<ProductAttribute> productAttributes = productAttributeRepo.findByProductId(productId);
+        Optional<BigDecimal> response = productAttributes.stream().map(attribute -> {
+            ProductAttributeInventoryDTO productInventory = productInventoryService.getByProductAndInventory(attribute.getId(), inventoryId);
+            if(productInventory == null) {return BigDecimal.valueOf(0);}
+            return productInventory.getSellPrice();
+        }).max(Comparator.naturalOrder());
+        return response.get();
     }
     @Override
-    public List<String> getOriginByProductId(Long productId) {
-        return productAttributeRepo.findOriginByProductId(productId);
+    public Integer totalQuantityByInventory (Long inventoryId, Long productId){
+        List<ProductAttribute> productAttributes = productAttributeRepo.findByProductId(productId);
+        Integer response = productAttributes.stream().map(attribute -> {
+            ProductAttributeInventoryDTO productInventory = productInventoryService.getByProductAndInventory(attribute.getId(), inventoryId);
+            if(productInventory == null) {return 0;}
+            return productInventory.getQuantity();
+        }).mapToInt(Integer::intValue).sum();
+        return response;
     }
 
 }

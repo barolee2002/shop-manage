@@ -51,20 +51,19 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        return http.cors().and().csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/user/login", "/user").permitAll()
-                .and()
-                .authorizeHttpRequests().requestMatchers("/**").permitAll()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> {}) // Use cors(Customizer... customizers) with an empty Customizer for default settings
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/user/login", "/user/admin").permitAll()
+                        .anyRequest().permitAll()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(getAuthenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
     }
 
     @Bean

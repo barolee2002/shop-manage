@@ -8,7 +8,7 @@ import lombok.Data;
 public class LoginResponse {
     private String username;
     private String name;
-    private Long ownerId;
+    private Long storeId;
     private Long id ;
     private String token;
     private long expireTime;

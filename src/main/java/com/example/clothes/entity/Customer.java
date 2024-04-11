@@ -16,11 +16,15 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column
     private String code;
+    @Column
     private String name;
+    @Column
     private String phone;
+    @Column
     private Long storeId;
+    @Column
     private Date createdAt;
 
 }
