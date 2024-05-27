@@ -52,7 +52,21 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         }
         attribute.setStatus(1);
         attribute.setOtherAttribute(transformData.arrayToString(attributeDTO.getOtherAttribute()));
-        return mapper.map(productAttributeRepo.save(attribute), ProductAttributeDTO.class);
+        attribute = productAttributeRepo.save(attribute);
+        ProductAttributeDTO response = mapper.map(attribute, ProductAttributeDTO.class);
+        if(!attributeDTO.getInventoryList().isEmpty()) {
+            ProductAttribute finalAttribute = attribute;
+
+            List<ProductAttributeInventoryDTO> inventoryResponse = attributeDTO.getInventoryList().stream().map(inventotyProduct -> {
+                inventotyProduct.setProductId(finalAttribute.getId());
+                productInventoryService.create(inventotyProduct);
+                System.out.println(inventotyProduct);
+                return productInventoryService.getByProductAndInventory(finalAttribute.getId(), inventotyProduct.getInventory().getId());
+            }).collect(Collectors.toList());
+            response.setInventoryList(inventoryResponse);
+        }
+
+        return response;
 
     }
 
@@ -60,14 +74,15 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     public List<ProductAttributeDTO> getAllAttributeByProduct(Long productId) {
         List<ProductAttributeDTO> productAttributeDTOS = new ArrayList<ProductAttributeDTO>();
         List<ProductAttribute> attributes = productAttributeRepo.findByProductIdAndStatus(productId);
-         productAttributeDTOS = attributes.stream().map(attribute -> {
-             ProductAttributeDTO attributeDTO =  mapper.map(attribute, ProductAttributeDTO.class);
-             attributeDTO.setInventoryList(productInventoryService.getAllByProductId(attribute.getId()));
-             if(attribute.getOtherAttribute() != null) {
-                 attributeDTO.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
-             }
+        System.out.println(attributes);
+        productAttributeDTOS = attributes.stream().map(attribute -> {
+            ProductAttributeDTO attributeDTO =  mapper.map(attribute, ProductAttributeDTO.class);
+            attributeDTO.setInventoryList(productInventoryService.getAllByProductId(attribute.getId()));
+            if(attribute.getOtherAttribute() != null) {
+                attributeDTO.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
+            }
 
-             return attributeDTO;
+            return attributeDTO;
          }).collect(Collectors.toList());
         return productAttributeDTOS;
     }
@@ -75,6 +90,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     public ProductAttributeDTO update (Long attributeId, ProductAttributeDTO attributeDTO) {
         ProductAttribute attribute = productAttributeRepo.findById((attributeId)).get();
         attribute = mapper.map(attributeDTO, ProductAttribute.class);
+        attribute.setOtherAttribute(transformData.arrayToString(attributeDTO.getOtherAttribute()));
         return mapper.map(productAttributeRepo.save(attribute), ProductAttributeDTO.class);
 
     }
@@ -84,6 +100,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         ProductAttributeDTO dto = mapper.map(attribute, ProductAttributeDTO.class);
         dto.setInventoryList(productInventoryService.getAllByProductId(attributeId));
         dto.setOtherAttribute(transformData.stringToArray(attribute.getOtherAttribute()));
+        Product product = productRepo.findById(attribute.getProductId()).get();
+        dto.setProductName(product.getName());
+
         return dto;
     }
     @Override
@@ -94,8 +113,8 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         return attribute.getId();
     }
     @Override
-    public List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId) {
-        List<ProductAttribute> productAttributes = productAttributeRepo.findByProductId(productId);
+    public List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId, String searchString) {
+        List<ProductAttribute> productAttributes = productAttributeRepo.getByProductIdAndCode(searchString,productId);
         List<ProductAttributeResponseDto> response = new ArrayList<ProductAttributeResponseDto>();
         response = productAttributes.stream().map(attribute -> {
             ProductAttributeResponseDto attributeResponseDto = mapper.map(attribute, ProductAttributeResponseDto.class);

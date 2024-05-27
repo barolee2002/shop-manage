@@ -7,11 +7,8 @@ import com.example.clothes.dto.response.ProductResponseDto;
 import com.example.clothes.service.ProductService;
 import com.example.clothes.utils.Constant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 import java.util.List;
 @RestController
 @RequestMapping("/product")
@@ -31,13 +28,13 @@ public class ProductController {
             @RequestParam( required = false, defaultValue = "") String searchString,
             @RequestParam(required = true, defaultValue = "1") Long inventoryId,
             @RequestParam( required = false, defaultValue = "") String category,
-            @RequestParam( required = true) Long userId,
+            @RequestParam( required = true) Long storeId,
             @RequestParam( required = false, defaultValue = "1") Integer page,
             @RequestParam( required = false, defaultValue = "10") Integer pageSize,
             @RequestParam( required = false, defaultValue = Constant.PAST_DATE) String fromTime,
             @RequestParam( required = false, defaultValue = Constant.FUTURE_DATE) String toTime
             ) {
-        return new Response<>(HttpStatus.OK.value(), productService.get(searchString,inventoryId, category,userId,fromTime,toTime,page,pageSize));
+        return new Response<>(HttpStatus.OK.value(), productService.get(searchString,inventoryId, category,storeId,fromTime,toTime,page,pageSize));
     }
     @GetMapping("/detail/{productId}")
     public Response<ProductDTO> getDetail(
@@ -48,6 +45,10 @@ public class ProductController {
     @GetMapping("/categories/{userId}")
     public Response<List<String>> getAllCategories(@PathVariable("userId") Long userId) {
         return new Response<>(HttpStatus.OK.value(),productService.getAllCatgories(userId));
+    }
+    @GetMapping("/brands/{userId}")
+    public Response<List<String>> getAllBrands(@PathVariable("userId") Long userId) {
+        return new Response<>(HttpStatus.OK.value(),productService.getAllBrands(userId));
     }
     @PutMapping("/delete/{id}")
     public Response<Integer> delete(@PathVariable("id") Long id) {

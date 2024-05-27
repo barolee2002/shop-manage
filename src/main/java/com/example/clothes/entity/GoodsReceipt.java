@@ -30,7 +30,7 @@ public class GoodsReceipt {
     private Long inventoryId;
     private Long storeId;
     @Column
-    private Long paymentTypeId;
+    private String paymentType;
 
     @Column
     private BigDecimal total;

@@ -20,4 +20,13 @@ public interface ProductAttributeRepository extends JpaRepository<ProductAttribu
     @Query("SELECT count(e) FROM ProductAttribute e WHERE e.productId = :productId")
     Long countByProductId( @Param("productId") Long productId);
     List<ProductAttribute> findByProductId(Long productId);
+
+    @Query("SELECT e FROM ProductAttribute e WHERE (:searchString IS NULL OR :searchString = '' OR e.code LIKE %:searchString%) " +
+            "AND e.productId = :productId"
+    )
+    List<ProductAttribute> getByProductIdAndCode(
+            @Param("searchString") String searchString,
+            @Param("productId") Long productId
+    );
+
 }

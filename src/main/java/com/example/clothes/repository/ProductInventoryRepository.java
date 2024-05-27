@@ -11,4 +11,5 @@ public interface ProductInventoryRepository extends JpaRepository<ProductInvento
     // Add custom query methods if needed
     List<ProductInventory> findByProductId(Long productId);
     ProductInventory findByProductIdAndInventoryId(Long productId, Long inventoryId);
+
 }

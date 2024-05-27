@@ -10,6 +10,7 @@ public class ProductAttributeDTO {
     private Long id;
     private String code;
     private Long productId;
+    private String productName;
     private String imageLink;
     private List<OtherAttribute> otherAttribute;
     private List<ProductAttributeInventoryDTO> inventoryList;

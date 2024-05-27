@@ -11,8 +11,6 @@ public class UserDTOResponse {
     private String email;
     private String address;
     private String username;
-    private String password;
     private String role;
     private Long storeId;
-    private Integer status;
 }

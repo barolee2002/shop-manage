@@ -18,7 +18,7 @@ public class GoodsReceiptProduct {
 
     @Column
     private Long receiptId;
-    @Column
+    @Column(name = "product_attribute_id")
     private Long productAttributeId;
 
     @Column

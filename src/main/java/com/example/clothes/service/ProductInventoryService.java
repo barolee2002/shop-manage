@@ -12,4 +12,6 @@ public interface ProductInventoryService {
     ProductAttributeInventoryDTO update(ProductAttributeInventoryDTO dto);
 
     ProductAttributeInventoryDTO getByProductAndInventory(Long productId, Long inventoryId);
+
+    String updateQuantity(Long inventoryId, Long productId, Integer quntity);
 }

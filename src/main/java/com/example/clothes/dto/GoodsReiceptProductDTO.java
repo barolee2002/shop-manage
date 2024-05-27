@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class GoodsReiceptProductDTO {
     private Long id;
     private Long receiptId;
-    private Long productAttributeId;
+    private ProductAttributeDTO productAttribute;
     private BigDecimal cost;
     private Integer quantity;
 

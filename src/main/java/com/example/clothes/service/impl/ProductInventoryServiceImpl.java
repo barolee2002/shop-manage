@@ -35,6 +35,8 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
     @Override
     public ProductAttributeInventoryDTO create(ProductAttributeInventoryDTO dto) {
         ProductInventory productInventory = mapper.map(dto, ProductInventory.class);
+        productInventory.setInventoryId(dto.getInventory().getId());
+        System.out.println(dto);
         return mapper.map(productInventoryRepository.save(productInventory), ProductAttributeInventoryDTO.class);
     }
     @Override
@@ -48,6 +50,22 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
         ProductInventory productInventory = productInventoryRepository.findByProductIdAndInventoryId(productId, inventoryId);
         if (productInventory == null) {return null;}
         return mapper.map(productInventory, ProductAttributeInventoryDTO.class);
+    }
+    @Override
+    public String updateQuantity(Long inventoryId, Long productId, Integer quntity) {
+        ProductInventory productInventory = productInventoryRepository.findByProductIdAndInventoryId(productId, inventoryId);
+        if(productInventory != null) {
+            productInventory.setQuantity(quntity);
+            productInventoryRepository.save(productInventory);
+            return "success";
+        }
+        ProductInventory newProductInventory = new ProductInventory();
+        newProductInventory.setInventoryId(inventoryId);
+        newProductInventory.setProductId(productId);
+        newProductInventory.setQuantity(quntity);
+        productInventoryRepository.save(newProductInventory);
+        return "success";
+
     }
 
 

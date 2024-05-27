@@ -2,6 +2,7 @@ package com.example.clothes.service.impl;
 
 import com.example.clothes.dto.BasePage;
 import com.example.clothes.dto.CustomerDTO;
+import com.example.clothes.dto.MetaData;
 import com.example.clothes.entity.Customer;
 import com.example.clothes.exception.AppException;
 import com.example.clothes.exception.Errors;
@@ -46,9 +47,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         Page<Customer> customers = customerRepo.findByStoreId(storeId, pageable);
         BasePage<CustomerDTO> response = new BasePage<>();
-        response.setTotalElements(customers.getTotalElements());
-        response.setTotalPages(customers.getTotalPages());
-        response.setElements(customers.getNumberOfElements());
+        MetaData metaData =  new MetaData();
+        metaData.setTotalElements(customers.getTotalElements());
+        metaData.setTotalPages(customers.getTotalPages());
+        metaData.setElements(customers.getNumberOfElements());
+        response.setMetaData(metaData);
         response.setData(customers.get().map(customer -> mapper.map(customer, CustomerDTO.class)).collect(Collectors.toList()));
         return response;
     }

@@ -1,7 +1,7 @@
 package com.example.clothes.service.impl;
 
+import com.example.clothes.dto.InventoryDto;
 import com.example.clothes.dto.request.InventoryDTORequest;
-import com.example.clothes.dto.response.InventoryDTOResponse;
 import com.example.clothes.dto.response.UserDTOResponse;
 import com.example.clothes.entity.Inventory;
 import com.example.clothes.entity.InventoryUser;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final UserRepository userRepo;
     private final ModelMapper mapper = new ModelMapper();
     @Override
-    public InventoryDTOResponse addInventory(Long userId, InventoryDTORequest inventoryDTORequest) {
+    public InventoryDto addInventory(Long userId, InventoryDTORequest inventoryDTORequest) {
         Inventory newInventory = mapper.map(inventoryDTORequest, Inventory.class);
         Long count = inventoryUserRepo.countAllByUserId(userId);
         newInventory.setCode("I" + (count + 1));
@@ -38,15 +37,15 @@ public class InventoryServiceImpl implements InventoryService {
         InventoryUser newInventoryUser = new InventoryUser();
         newInventoryUser.setUserInventoryKey(new UserInventoryKey(userId,newInventory.getId()));
         inventoryUserRepo.save(newInventoryUser);
-        return mapper.map(newInventory, InventoryDTOResponse.class);
+        return mapper.map(newInventory, InventoryDto.class);
 
     }
     @Override
-    public InventoryDTOResponse update(Long inventoryId, InventoryDTORequest inventoryDTORequest) {
+    public InventoryDto update(Long inventoryId, InventoryDTORequest inventoryDTORequest) {
         Inventory oldInventory = inventoryRepo.findById(inventoryId).get();
         oldInventory = mapper.map(inventoryDTORequest, Inventory.class);
         oldInventory = inventoryRepo.save(oldInventory);
-        return mapper.map(oldInventory, InventoryDTOResponse.class);
+        return mapper.map(oldInventory, InventoryDto.class);
     }
     @Override
     public Long delete(Long inventoryId) {
@@ -56,17 +55,18 @@ public class InventoryServiceImpl implements InventoryService {
         return inventory.getId();
     }
     @Override
-    public List<InventoryDTOResponse> getAllByUser(Long userId) {
-        List<InventoryDTOResponse> inventoriesDTO = new ArrayList<InventoryDTOResponse>();
+    public List<InventoryDto> getAllByUser(Long userId) {
+        List<InventoryDto> inventoriesDTO = new ArrayList<InventoryDto>();
         List<InventoryUser> inventories = inventoryUserRepo.findByUserId(userId);
         List<Inventory> inventories1 = inventories.stream().map(item -> inventoryRepo.findById(item.getUserInventoryKey().getInventoryId()).get()).collect(Collectors.toList());
-        inventoriesDTO = Arrays.asList(mapper.map(inventories1, InventoryDTOResponse[].class));
+        inventoriesDTO = Arrays.asList(mapper.map(inventories1, InventoryDto[].class));
         return inventoriesDTO;
     }
     @Override
-    public InventoryDTOResponse getDetail(Long inventoryId) {
+    public InventoryDto getDetail(Long inventoryId) {
         Inventory inventory =  inventoryRepo.findById(inventoryId).get();
-        return mapper.map(inventory, InventoryDTOResponse.class);
+        InventoryDto response = mapper.map(inventory, InventoryDto.class);
+        return response;
     }
     @Override
     public List<UserDTOResponse> getAllStaffInInventory(Long inventoryId) {
@@ -81,5 +81,12 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }).collect(Collectors.toList());
         return staffs;
+    }
+
+    @Override
+    public List<InventoryDto> getByStoreId(Long storeId) {
+        List<Inventory> inventories = inventoryRepo.findByStoreId(storeId);
+        List<InventoryDto> response = Arrays.asList(mapper.map(inventories, InventoryDto[].class));
+        return response;
     }
 }

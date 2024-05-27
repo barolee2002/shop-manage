@@ -21,7 +21,7 @@ public interface ProductAttributeService {
     Long delete(Long attributeId);
 
 
-    List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId);
+    List<ProductAttributeResponseDto> getByProductAndInventory(Long productId, Long inventoryId, String searchString);
 
     BigDecimal minPriceByProductAndInventory(Long productId, Long inventoryId);
 

@@ -4,7 +4,6 @@ import com.example.clothes.config.security.JwtService;
 import com.example.clothes.dto.request.LoginRequest;
 import com.example.clothes.dto.request.UserDTORequest;
 import com.example.clothes.dto.response.LoginResponse;
-import com.example.clothes.dto.response.StaffResponse;
 import com.example.clothes.dto.response.UserDTOResponse;
 import com.example.clothes.entity.InventoryUser;
 import com.example.clothes.entity.User;
@@ -23,6 +22,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Value("${expire.time}")
     private long expireTime;
     @Override
-    public UserDTOResponse addUser(UserDTOResponse userDTO) {
+    public UserDTOResponse addUser(UserDTORequest userDTO) {
         if( Utils.isEmptyOrNull(userDTO.getUsername()) || Utils.isEmptyOrNull(userDTO.getPassword()))
             throw new AppException(Errors.INVALID_DATA);
         if(userRepo.findFirstByUsername(userDTO.getUsername()).isPresent()){
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     //thiếu thêm nhân viên vào kho
     @Override
-    public StaffResponse addStaff(StaffResponse staff) {
+    public UserDTOResponse addStaff(UserDTORequest staff) {
         if( Utils.isEmptyOrNull(staff.getUsername()) || Utils.isEmptyOrNull(staff.getPassword()))
             throw new AppException(Errors.INVALID_DATA);
         if(userRepo.findFirstByUsername(staff.getUsername()).isPresent()){
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
         InventoryUser inventoryUser = new InventoryUser();
         inventoryUser.setUserInventoryKey(new UserInventoryKey(user.getId(), staff.getInventoryId()));
         inventoryUserRepo.save(inventoryUser);
-        return mapper.map(userRepo.save(user), StaffResponse.class);
+        return mapper.map(userRepo.save(user), UserDTOResponse.class);
     }
 
     @Override
@@ -107,6 +108,12 @@ public class UserServiceImpl implements UserService {
         if(userOptional.isEmpty())
             throw new AppException(Errors.INVALID_DATA);
         return mapper.map(userOptional.get(), UserDTOResponse.class);
+    }
+
+    @Override
+    public List<UserDTOResponse> getAll(Long storeId) {
+        List<User> entities = userRepo.findByStoreId(storeId);
+        return Arrays.asList(mapper.map(entities, UserDTOResponse[].class));
     }
 
 }

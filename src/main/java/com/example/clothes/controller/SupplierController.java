@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/supplier")
 @RequiredArgsConstructor
@@ -15,6 +17,10 @@ public class SupplierController {
     @PostMapping("/creating")
     public Response<SupplierDTO> create (@RequestBody SupplierDTO supplierDTO) {
         return new Response<>(HttpStatus.OK.value(), supplierService.create(supplierDTO));
+    }
+    @GetMapping("/get-all/{storeId}")
+    public Response<List<SupplierDTO>> getAll(@PathVariable Long storeId) {
+        return new Response<>(HttpStatus.OK.value(), supplierService.getALl(storeId));
     }
     @GetMapping("/get-detail/{supplierId}")
     public Response<SupplierDTO> getDetail(@PathVariable Long supplierId) {

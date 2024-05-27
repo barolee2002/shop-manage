@@ -24,7 +24,7 @@ public class SellingOrder {
     private Long customerId;
     @Column
     private Long userId;
-
+    private String paymentType;
     @Column
     private BigDecimal total;
     @Column

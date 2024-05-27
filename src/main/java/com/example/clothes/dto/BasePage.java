@@ -11,8 +11,6 @@ import java.util.List;
 @Data
 @Builder
 public class BasePage<T>{
-    private int totalPages;
-    private long totalElements;
-    private int elements;
+    private MetaData metaData;
     private List<T> data;
 }

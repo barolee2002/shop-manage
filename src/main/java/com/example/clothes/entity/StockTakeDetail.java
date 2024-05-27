@@ -16,9 +16,9 @@ public class StockTakeDetail {
     private Long id;
 
     @Column
-    private Long stockTakeId;
+    private Long stockTake;
     @Column
-    private Long productAttributeId;
+    private Long productId;
 
     @Column
     private Integer oldQuantity;

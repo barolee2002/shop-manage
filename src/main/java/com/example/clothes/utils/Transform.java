@@ -11,10 +11,11 @@ public class Transform {
         return ortherAttribute.toString();
     }
     public OtherAttribute stringToObject(String attribute) {
-        List<String> arrayFromString = Arrays.asList(attribute.split("[{};]"));
+        List<String> arrayFromString = Arrays.asList(attribute.split("[{},]"));
         OtherAttribute ortherAttribute = new OtherAttribute();
-        ortherAttribute.setName(arrayFromString.get(0));
-        ortherAttribute.setValue(arrayFromString.get(1));
+        ortherAttribute.setName(arrayFromString.get(1));
+        ortherAttribute.setValue(arrayFromString.get(2));
+
         return ortherAttribute;
     }
     public String arrayToString (List<OtherAttribute> ortherAttributeList) {

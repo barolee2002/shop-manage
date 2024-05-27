@@ -18,6 +18,8 @@ public interface ProductService {
 
     List<String> getAllCatgories(Long userId);
 
+    List<String> getAllBrands(Long userId);
+
     Integer deleteProduct(Long productId);
 
 }
