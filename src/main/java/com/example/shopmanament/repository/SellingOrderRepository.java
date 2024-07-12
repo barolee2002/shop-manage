@@ -18,12 +18,12 @@ public interface SellingOrderRepository extends JpaRepository<SellingOrder, Long
     List<SellingOrder> findByStoreId(Long storeId);
     List<SellingOrder> findByCustomerId(Long customerId);
 
-    @Query("SELECT e FROM SellingOrder e WHERE (:searchString IS NULL OR :searchString = '' or e.code like %:searchString%) " +
+    @Query("SELECT e FROM SellingOrder e WHERE (:searchString IS NULL OR :searchString = '' OR e.code LIKE %:searchString%) " +
             "AND (:staffId IS NULL OR :staffId = 0 OR e.userId = :staffId) " +
             "AND (:paymentType IS NULL OR :paymentType = '' OR e.paymentType = :paymentType) " +
             "AND (:inventoryId IS NULL OR e.inventoryId = :inventoryId) " +
-            "AND (e.createAt IS NULL OR STR_TO_DATE(e.createAt, '%Y-%m-%d') BETWEEN STR_TO_DATE(:sellFromTime , '%Y-%m-%d') AND STR_TO_DATE(:sellToTime, '%Y-%m-%d')) " +
-            "AND (e.total IS NULL OR e.total >= :fromTotal AND e.total <= :toTotal) " +
+            "AND (:sellFromTime IS NULL OR :sellToTime IS NULL OR STR_TO_DATE(e.createAt, '%Y-%m-%d') BETWEEN STR_TO_DATE(:sellFromTime, '%Y-%m-%d') AND STR_TO_DATE(:sellToTime, '%Y-%m-%d')) " +
+            "AND (:fromTotal IS NULL OR :toTotal IS NULL OR e.total BETWEEN :fromTotal AND :toTotal) " +
             "AND (e.storeId = :storeId)"
     )
     Page<SellingOrder> getAll(
@@ -38,6 +38,7 @@ public interface SellingOrderRepository extends JpaRepository<SellingOrder, Long
             @Param("toTotal") BigDecimal toTotal,
             Pageable pageable
     );
+
     @Query("SELECT e FROM SellingOrder e WHERE (:inventoryId IS NULL OR e.inventoryId = :inventoryId) " +
             "AND (e.createAt IS NULL OR STR_TO_DATE(e.createAt, '%Y-%m-%d') >= STR_TO_DATE(:sellFromTime , '%Y-%m-%d') AND STR_TO_DATE(e.createAt, '%Y-%m-%d') <= STR_TO_DATE(:sellToTime, '%Y-%m-%d')) " +
             "AND (e.storeId = :storeId)"

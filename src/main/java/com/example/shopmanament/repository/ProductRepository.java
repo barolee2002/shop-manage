@@ -12,8 +12,8 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // Add custom query methods if needed
     @Query("SELECT DISTINCT e FROM Product e LEFT JOIN ProductAttribute pa ON e.id = pa.productId WHERE " +
-            "((:searchString IS NULL OR :searchString = '') OR e.name LIKE %:searchString%) " +
-            "OR ((:searchString IS NULL OR :searchString = '') OR pa.code LIKE %:searchString%) " +
+            "(((:searchString IS NULL OR :searchString = '') OR e.name LIKE %:searchString%) " +
+            "OR ((:searchString IS NULL OR :searchString = '') OR pa.code LIKE %:searchString%)) " +
             "AND (e.status = 1) " +
             "AND (:category IS NULL OR :category = '' OR e.category LIKE :category) " +
             "AND (:storeId IS NULL OR e.storeId = :storeId) " +

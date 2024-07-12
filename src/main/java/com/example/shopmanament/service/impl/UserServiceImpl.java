@@ -38,7 +38,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,6 +77,7 @@ public class UserServiceImpl implements UserService {
                 .phone(userDTO.getPhone())
                 .email(userDTO.getEmail())
                 .name(userDTO.getName())
+                .avatar(userDTO.getAvatar())
                 .username(userDTO.getUsername())
                 .address(userDTO.getAddress())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
@@ -110,6 +110,7 @@ public class UserServiceImpl implements UserService {
                 .name(staff.getName())
                 .username(staff.getUsername())
                 .address(staff.getAddress())
+                .avatar(staff.getAvatar())
                 .password(passwordEncoder.encode(staff.getPassword()))
                 .role(staff.getRole())
                 .storeId(staff.getStoreId())
@@ -149,6 +150,7 @@ public class UserServiceImpl implements UserService {
                 .storeId(userOptional.get().getStoreId())
                 .name(userOptional.get().getName())
                 .token(jwt)
+                .isAuthentication(userOptional.get().getIsAuthentication())
                 .expireTime(System.currentTimeMillis() + expireTime)
                 .id(userOptional.get().getId())
                 .build();
@@ -160,9 +162,16 @@ public class UserServiceImpl implements UserService {
         if ( userOptional.isEmpty())
             throw new AppException(Errors.INVALID_DATA);
         User user = userOptional.get();
-        user.setUsername(Utils.isEmptyOrNull(userDTO.getUsername()) ? userDTO.getUsername() : user.getUsername());
+        user = mapper.map(userDTO, User.class);
+        if(userDTO.getUsername() != null && userDTO.getUsername() != "") {
+            user.setUsername(userDTO.getUsername());
+        }
+        if(userDTO.getPassword() != null && userDTO.getPassword() != "") {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
         user.setEmail(userDTO.getEmail());
         user.setAddress(userDTO.getAddress());
+        user.setAvatar(userDTO.getAvatar());
         user.setPhone(userDTO.getPhone());
         user.setRole(userDTO.getRole());
 
@@ -296,6 +305,17 @@ public class UserServiceImpl implements UserService {
         } finally {
             workbook.close();
         }
+    }
+
+    @Override
+    public String delete(Long userId) throws AppException {
+        Optional<User> user = userRepo.findById(userId);
+        if(user.isEmpty()) {
+            throw new AppException(Errors.NOT_FOUND);
+        }
+        user.get().setStatus(0);
+        userRepo.save(user.get());
+        return "success";
     }
 
 }

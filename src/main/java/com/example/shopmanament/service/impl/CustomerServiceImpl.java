@@ -43,6 +43,12 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = mapper.map(customerDTO, Customer.class);
         return mapper.map(customerRepo.save(customer), CustomerDTO.class);
     }
+    @Override
+    public List<CustomerDTO> getList(Long storeId) {
+        List<Customer> entities = customerRepo.findAllByStoreId(storeId);
+        List<CustomerDTO> response = entities.stream().map(entity -> mapper.map(entity, CustomerDTO.class)).collect(Collectors.toList());
+        return response;
+    }
 
 
     @Override

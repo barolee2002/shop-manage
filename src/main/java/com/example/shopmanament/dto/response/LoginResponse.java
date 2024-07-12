@@ -12,4 +12,5 @@ public class LoginResponse {
     private Long id ;
     private String token;
     private long expireTime;
+    private Integer isAuthentication;
 }

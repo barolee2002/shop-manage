@@ -53,7 +53,7 @@ public class ProductServiceimpl implements ProductService {
             throw new AppException(Errors.NOT_FOUND);
         }
         product = mapper.map(productDTO, Product.class);
-        productDTO.getAttributes().stream().map(attribute -> {
+        productDTO.getAttributes().stream().filter(attribute -> attribute.getId() != 0).map(attribute -> {
             return attributeService.update(attribute.getId(), attribute);
         });
         product = productRepo.save(product);

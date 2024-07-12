@@ -10,6 +10,7 @@ public class UserDTORequest {
     private String email;
     private String address;
     private String username;
+    private String avatar;
     private Long storeId;
     private Long inventoryId;
     private String password;

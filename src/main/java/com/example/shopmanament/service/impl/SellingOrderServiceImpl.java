@@ -4,6 +4,7 @@ import com.example.shopmanament.dto.*;
 import com.example.shopmanament.dto.response.UserDTOResponse;
 import com.example.shopmanament.entity.SellingOrder;
 import com.example.shopmanament.entity.User;
+import com.example.shopmanament.exception.AppException;
 import com.example.shopmanament.repository.SellingOrderRepository;
 import com.example.shopmanament.repository.UserRepository;
 import com.example.shopmanament.service.*;
@@ -51,6 +52,9 @@ public class SellingOrderServiceImpl implements SellingOrderService {
     public SellingOrderDTO create(CookieDto cookieDto,SellingOrderDTO orderDTO) {
         Date current = new Date();
         SellingOrder sellingOrder = mapper.map(orderDTO, SellingOrder.class);
+        if(orderDTO.getCustomer().getId() != 0 && orderDTO.getCustomer().getId() != null) {
+            sellingOrder.setCustomerId(orderDTO.getCustomer().getId());
+        }
         sellingOrder.setCustomerId(orderDTO.getCustomer().getId());
         Long count = sellingOrderRepo.countByStoreId(orderDTO.getId());
         if(orderDTO.getCode() == null || orderDTO.getCode().equals("")) {
@@ -78,15 +82,18 @@ public class SellingOrderServiceImpl implements SellingOrderService {
     }
 
     @Override
-    public BasePage<SellingOrderDTO> getAll(Long storeId,String searchString, Long staffId, Long inventoryId, String sellFromTime, String sellToTime, String paymentType, BigDecimal fromTotal, BigDecimal toTotal, Integer page, Integer pageSize) {
+    public BasePage<SellingOrderDTO> getAll(Long storeId,String searchString, Long staffId, Long inventoryId, String sellFromTime, String sellToTime, String paymentType, BigDecimal fromTotal, BigDecimal toTotal, Integer page, Integer pageSize) throws AppException {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        Page<SellingOrder> sellingOrderPage = sellingOrderRepo.getAll(storeId,staffId,searchString, inventoryId, sellFromTime, sellToTime, paymentType, fromTotal,toTotal, pageable);
+        Page<SellingOrder> sellingOrderPage = sellingOrderRepo.getAll(storeId, staffId, searchString, inventoryId, sellFromTime, sellToTime, paymentType, fromTotal, toTotal, pageable);
         List<SellingOrder> entities = sellingOrderPage.get().collect(Collectors.toList());
         List<SellingOrderDTO> dtos= entities.stream().map(entity -> {
             SellingOrderDTO dto = mapper.map(entity, SellingOrderDTO.class);
             dto.setStaff(userService.getInfo(entity.getUserId()));
             dto.setInventory(inventoryService.getDetail(entity.getInventoryId()));
-            dto.setCustomer(customerService.getDetail(entity.getCustomerId()));
+            if(entity.getCustomerId() != 0 && entity.getCustomerId() != null) {
+                dto.setCustomer(customerService.getDetail(entity.getCustomerId()));
+            }
+
             return dto;
         }).collect(Collectors.toList());
         BasePage<SellingOrderDTO> dataPage = new BasePage<>();

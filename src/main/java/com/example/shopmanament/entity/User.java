@@ -30,6 +30,8 @@ public class User {
     @Column
     private String username;
     @Column
+    private String avatar;
+    @Column
     private String password;
     @Column
     private String role;

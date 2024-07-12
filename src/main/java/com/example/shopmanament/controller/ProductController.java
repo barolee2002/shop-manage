@@ -56,7 +56,7 @@ public class ProductController {
     public Response<List<String>> getAllBrands(@PathVariable("userId") Long userId) {
         return new Response<>(HttpStatus.OK.value(),productService.getAllBrands(userId));
     }
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public Response<Integer> delete(@PathVariable("id") Long id) {
         return new Response<>(HttpStatus.OK.value(),productService.deleteProduct(id));
     }

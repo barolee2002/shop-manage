@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/updating/{userId}")
-    public Response<UserDTOResponse> update(@ModelAttribute UserDTORequest userDTO, @PathVariable Long userId) {
+    public Response<UserDTOResponse> update(@RequestBody UserDTORequest userDTO, @PathVariable Long userId) {
         return new Response<>(HttpStatus.OK.value(), userService.update(userDTO, userId));
     }
     @GetMapping( value = "/{userId}")
@@ -86,6 +86,10 @@ public class UserController {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+    @DeleteMapping("/delete/{userId}")
+    public Response<String> delete(@PathVariable("userId") Long userId) {
+        return new Response<>(HttpStatus.OK.value(), userService.delete(userId));
     }
 
 

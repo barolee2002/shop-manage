@@ -14,6 +14,7 @@ public class UserDTOResponse {
     private String email;
     private String address;
     private String username;
+    private String avatar;
     private String role;
     private Long storeId;
     private List<ActionHistoryDto> actionHistories;

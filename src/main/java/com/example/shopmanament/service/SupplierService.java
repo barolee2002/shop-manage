@@ -1,17 +1,18 @@
 package com.example.shopmanament.service;
 
 import com.example.shopmanament.dto.BasePage;
+import com.example.shopmanament.dto.CookieDto;
 import com.example.shopmanament.dto.SupplierDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface SupplierService {
-    SupplierDTO create(SupplierDTO dto);
+    SupplierDTO create(CookieDto cookieDto, SupplierDTO dto);
 
-    SupplierDTO update(SupplierDTO dto);
+    SupplierDTO update(CookieDto cookieDto,SupplierDTO dto);
 
-    Long delete(Long supplierId);
+    Long delete(CookieDto cookieDto,Long supplierId);
 
     SupplierDTO getDetail(Long supplierId);
 

@@ -38,6 +38,12 @@ public class CustomerController {
     ) {
         return new Response<>(HttpStatus.OK.value(),customerService.getAll(searchString,storeId, page, pageSize));
     }
+    @GetMapping("/list/{storeId}")
+    public Response<List<CustomerDTO>> getList (
+            @PathVariable Long storeId
+    ) {
+        return new Response<>(HttpStatus.OK.value(),customerService.getList(storeId));
+    }
     @GetMapping("/list-top-expenditure/{storeId}")
     public Response<List<CustomerStatisticDto>> getTopCustomerExpenditure (
             @PathVariable Long storeId,

@@ -7,6 +7,7 @@ import com.example.shopmanament.dto.request.UserDTORequest;
 import com.example.shopmanament.dto.response.LoginResponse;
 import com.example.shopmanament.dto.response.UserDTOResponse;
 import com.example.shopmanament.entity.User;
+import com.example.shopmanament.exception.AppException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,4 +40,6 @@ public interface UserService {
     Integer confirmUser(String confirmationToken);
 
     void getWorkPoints(Long storeId, String time, HttpServletResponse response) throws IOException;
+
+    String delete(Long userId) throws AppException;
 }

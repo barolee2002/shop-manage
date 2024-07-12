@@ -9,6 +9,8 @@ import java.util.List;
 public interface CustomerService {
     CustomerDTO create(CustomerDTO customerDTO);
 
+    List<CustomerDTO> getList(Long storeId);
+
     CustomerDTO getDetail(Long customerId);
 
     CustomerDTO update(CustomerDTO customerDTO);

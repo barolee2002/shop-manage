@@ -1,12 +1,14 @@
 package com.example.shopmanament.service.impl;
 
 import com.example.shopmanament.dto.BasePage;
+import com.example.shopmanament.dto.CookieDto;
 import com.example.shopmanament.dto.MetaData;
 import com.example.shopmanament.dto.SupplierDTO;
 import com.example.shopmanament.entity.GoodsReceipt;
 import com.example.shopmanament.entity.Supplier;
 import com.example.shopmanament.repository.GoodsReceiptRepository;
 import com.example.shopmanament.repository.SupplierRepository;
+import com.example.shopmanament.service.ActionHistoryService;
 import com.example.shopmanament.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,8 +28,9 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepo;
     private final ModelMapper mapper =  new ModelMapper();
+    private final ActionHistoryService actionHistoryService;
     private final GoodsReceiptRepository goodsReceiptRepository;
-    public Integer totalOrderBySupplier(Long supplierId) {
+    public Integer totalOrderBySupplier( Long supplierId) {
         List<GoodsReceipt> entities = goodsReceiptRepository.findBySupplierId(supplierId);
         return entities.size();
     }
@@ -38,22 +41,30 @@ public class SupplierServiceImpl implements SupplierService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     @Override
-    public SupplierDTO create(SupplierDTO dto) {
+    public SupplierDTO create(CookieDto cookieDto,SupplierDTO dto) {
         Supplier supplier = mapper.map(dto, Supplier.class);
         supplier.setStatus(1);
-        return mapper.map(supplierRepo.save(supplier), SupplierDTO.class);
+        supplier = supplierRepo.save(supplier);
+        actionHistoryService.create(cookieDto, "Tạo nhà cung cấp: " +supplier.getName());
+
+        return mapper.map(supplier, SupplierDTO.class);
     }
     @Override
-    public SupplierDTO update(SupplierDTO dto) {
+    public SupplierDTO update(CookieDto cookieDto,SupplierDTO dto) {
         Supplier supplier = supplierRepo.findById(dto.getId()).get();
         supplier = mapper.map(dto, Supplier.class);
-        return mapper.map(supplierRepo.save(supplier), SupplierDTO.class);
+        supplier = supplierRepo.save(supplier);
+        actionHistoryService.create(cookieDto, "Cập nhập nhà cung cấp: " +supplier.getName());
+
+        return mapper.map(supplier, SupplierDTO.class);
     }
     @Override
-    public Long delete (Long supplierId) {
+    public Long delete (CookieDto cookieDto,Long supplierId) {
         Supplier supplier = supplierRepo.findById(supplierId).get();
         supplier.setStatus(0);
+        actionHistoryService.create(cookieDto, "Xóa nhà cung cấp: " +supplier.getName());
         supplierRepo.save(supplier);
+
         return supplierId;
     }
     @Override
